@@ -1,6 +1,7 @@
 import scrapy
 from scrapy import Request
-
+from trustpilot_scraper.items import TrustpilotScraperItem
+from scrapy.loader import ItemLoader
 
 class TrustpilotSpider(scrapy.Spider):
     custom_settings = {
@@ -35,6 +36,7 @@ class TrustpilotSpider(scrapy.Spider):
     }
 
     def parse(self, response, **kwargs):
+
         categories = response.css('div.styles_list__jB_Xe a::attr(href)').getall()
         categories = set(categories)
         for category in categories:
@@ -45,21 +47,36 @@ class TrustpilotSpider(scrapy.Spider):
     def parse_reviews(self, response):
         reviews = response.css('section.styles_feed__MNr87 > div.styles_wrapper__2JOo2')
         for review in reviews:
+            l = ItemLoader(item = TrustpilotScraperItem(), selector = review)
             title = review.css('p.styles_displayName__GOhL2::text').get()
+            l.add_value('title', title)
+
             trust_score = review.css('span.styles_trustScore__8emxJ::text').getall()
             try:
                 trust_score = [score.strip() for score in trust_score if score.strip()][0]
             except IndexError:
-                trust_score = None
+                trust_score = 'N/A'
+            l.add_value('trust_score', trust_score)
+
             location = review.css('span.styles_location__ILZb0::text').get()
+            if not location:
+                location = 'N/A'
+            l.add_value('location', location)
+
             services = review.css('div.styles_categoriesLabels__FiWQ4 > span.typography_appearance-default__AAY17::text').getall()
-            services = set(services)
-            yield {
-                'title': title,
-                'trust_score': trust_score,
-                'location': location,
-                'services': services
-            }
+            services= list(set(services))
+            l.add_value('services', services)
+
+            # item['title'] = review.css('p.styles_displayName__GOhL2::text').get()
+            # item['trust_score'] = review.css('span.styles_trustScore__8emxJ::text').getall()
+            # try:
+            #     item['trust_score'] = [score.strip() for score in trust_score if score.strip()][0]
+            # except IndexError:
+            #     item['trust_score'] = None
+            # item['location'] = review.css('span.styles_location__ILZb0::text').get()
+            # services = review.css('div.styles_categoriesLabels__FiWQ4 > span.typography_appearance-default__AAY17::text').getall()
+            # item['services'] = set(services)
+            yield l.load_item()
         try:
             next_page = response.css('[data-pagination-button-next-link="true"]').attrib['href']
         except KeyError:
