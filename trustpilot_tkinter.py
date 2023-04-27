@@ -33,20 +33,22 @@ class TrustPilotTK:
 
     @staticmethod
     def get_data(elements, entry_name, list_name):
-        search_str = entry_name.get()  # user entered string
-        list_name.delete(0, END)
-        for element in elements:
+        search_str = entry_name.get()  # string that the user enters
+        list_name.delete(0, END)  # clear the content of the Entry widget in this range
+        for element in elements:  # for each element in my list of elements
             if isinstance(element, float):
                 element = str(element)
-            if re.search(search_str, element, re.IGNORECASE):
-                list_name.insert(END, element.title())
+            if re.search(search_str, element, re.IGNORECASE):  # searches for all of the instances of the pattern in
+                # the given string/ by contrast, .match will check if the pattern is found at the beginning of the string
+                list_name.insert(END, element.title())  # display data, first parameter is the index position and the
+                # second parameter is the info to be inserted
 
     @staticmethod
     def search_item(widget_search, entry_name, list_name):
         selected_item = widget_search.widget
-        index = int(selected_item.curselection()[0])
-        selected_value = selected_item.get(index)
-        entry_name.set(selected_value.title())
+        index = int(selected_item.curselection()[0])  # function used to fetch multiple values and display them
+        selected_value = selected_item.get(index)  # get the value at the index position
+        entry_name.set(selected_value.title())  # move the selected value at the entry box
         list_name.delete(0, END)
 
 
@@ -69,10 +71,11 @@ class TrustPilotTK:
 
 
         # Entry 1 - LOCATION
-        self.entry1_str = tk.StringVar(self.master)
+        self.entry1_str = tk.StringVar(self.master)  # value holder for string variables and can be used for an
+        # Entry/Label widget
 
         self.location = set([x[0] for x in cursor.execute("""SELECT location FROM trustpilot_table""").fetchall()])
-        # print(self.location)
+        # returns a deduplicated list;(x[0] for x is used to return a list of elements, not a tuple
 
         self.entry1 = tk.Entry(self.master, font=font1, textvariable=self.entry1_str)
         self.entry1.grid(row=1, column=1, padx=20,pady=5)
@@ -83,9 +86,12 @@ class TrustPilotTK:
         self.entry1_str.trace('w', lambda *args:  self.get_data(self.location,
                                                                 self.entry1,
                                                                 self.list1))
+        # tracing the value of the Entry widget that gets updated when the user enters a value in it
         self.list1.bind("<<ListboxSelect>>", lambda event: self.search_item(event,
                                                                             self.entry1_str,
                                                                             self.list1))
+        # execute the search_item function when the selected items in the listbox change
+
 
         # Entry 2 - SERVICES
         self.entry2_str = tk.StringVar(self.master)

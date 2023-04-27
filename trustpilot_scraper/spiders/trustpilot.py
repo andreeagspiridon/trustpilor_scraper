@@ -5,12 +5,12 @@ from scrapy.loader import ItemLoader
 
 class TrustpilotSpider(scrapy.Spider):
     custom_settings = {
-        'ROBOTSTXT_OBEY': False,
-        'HTTPCACHE_ENABLED': False,
-        'CONCURRENT_REQUESTS_PER_DOMAIN': 5,
-        'RETRY_TIMES': 10,
+        'ROBOTSTXT_OBEY': False,  # if enabled, scrapy will respect robots.txt policies
+        'HTTPCACHE_ENABLED': False,  # disable the storing of request response
+        'CONCURRENT_REQUESTS_PER_DOMAIN': 5,  # the maximum number of simultaneous requests performed
+        'RETRY_TIMES': 10,  # max number of times to retry in addition to first download
         'RETRY_HTTP_CODES': [503, 502, 501, 302, 301, 403, 404, 402, 401, 400, 500],
-        'DOWNLOAD_DELAY': 1.5
+        'DOWNLOAD_DELAY': 1.5  # minimum seconds to wait between 2 consecutive requests
     }
     name = "trustpilot"
     allowed_domains = ["uk.trustpilot.com"]
