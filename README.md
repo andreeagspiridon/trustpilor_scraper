@@ -10,7 +10,7 @@ pip3 install tkinter
 ```
 ## About
 
-This project contains a tool built using Scrapy, a framework used for web scraping. It allows the structured extraction of information from trustpilot.com, such as the location, services, and trust-score of over 270.000 United Kingdom records, which are stored in  an easy-to-access SQLite database.
+This project contains a tool built using Scrapy, a framework used for web scraping. It allows the structured extraction of information from trustpilot.com, such as the title, location, services, and trust-score of over 270.000 United Kingdom records, which are stored in  an easy-to-access SQLite database.
 The tool also features a user-friendly interface, that was created using Tkinter, that offers filtering options to explore the data effortlessly.
 
 ## Video instructions
