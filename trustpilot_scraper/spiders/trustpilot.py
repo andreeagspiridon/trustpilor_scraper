@@ -3,14 +3,15 @@ from scrapy import Request
 from trustpilot_scraper.items import TrustpilotScraperItem
 from scrapy.loader import ItemLoader
 
+
 class TrustpilotSpider(scrapy.Spider):
     custom_settings = {
-        'ROBOTSTXT_OBEY': False,  # if enabled, scrapy will respect robots.txt policies
-        'HTTPCACHE_ENABLED': False,  # disable the storing of request response
-        'CONCURRENT_REQUESTS_PER_DOMAIN': 5,  # the maximum number of simultaneous requests performed
-        'RETRY_TIMES': 10,  # max number of times to retry in addition to first download
+        'ROBOTSTXT_OBEY': False,
+        'HTTPCACHE_ENABLED': False,
+        'CONCURRENT_REQUESTS_PER_DOMAIN': 5,
+        'RETRY_TIMES': 10,
         'RETRY_HTTP_CODES': [503, 502, 501, 302, 301, 403, 404, 402, 401, 400, 500],
-        'DOWNLOAD_DELAY': 1.5  # minimum seconds to wait between 2 consecutive requests
+        'DOWNLOAD_DELAY': 1.5
     }
     name = "trustpilot"
     allowed_domains = ["uk.trustpilot.com"]
@@ -36,7 +37,6 @@ class TrustpilotSpider(scrapy.Spider):
     }
 
     def parse(self, response, **kwargs):
-
         categories = response.css('div.styles_list__jB_Xe a::attr(href)').getall()
         categories = set(categories)
         for category in categories:
@@ -47,7 +47,7 @@ class TrustpilotSpider(scrapy.Spider):
     def parse_reviews(self, response):
         reviews = response.css('section.styles_feed__MNr87 > div.styles_wrapper__2JOo2')
         for review in reviews:
-            l = ItemLoader(item = TrustpilotScraperItem(), selector = review)
+            l = ItemLoader(item=TrustpilotScraperItem(), selector=review)
             title = review.css('p.styles_displayName__GOhL2::text').get()
             l.add_value('title', title)
 
@@ -63,19 +63,10 @@ class TrustpilotSpider(scrapy.Spider):
                 location = 'N/A'
             l.add_value('location', location)
 
-            services = review.css('div.styles_categoriesLabels__FiWQ4 > span.typography_appearance-default__AAY17::text').getall()
-            services= list(set(services))
+            services = review.css('div.styles_categoriesLabels__FiWQ4 > '
+                                  'span.typography_appearance-default__AAY17::text').getall()
+            services = list(set(services))
             l.add_value('services', services)
-
-            # item['title'] = review.css('p.styles_displayName__GOhL2::text').get()
-            # item['trust_score'] = review.css('span.styles_trustScore__8emxJ::text').getall()
-            # try:
-            #     item['trust_score'] = [score.strip() for score in trust_score if score.strip()][0]
-            # except IndexError:
-            #     item['trust_score'] = None
-            # item['location'] = review.css('span.styles_location__ILZb0::text').get()
-            # services = review.css('div.styles_categoriesLabels__FiWQ4 > span.typography_appearance-default__AAY17::text').getall()
-            # item['services'] = set(services)
             yield l.load_item()
         try:
             next_page = response.css('[data-pagination-button-next-link="true"]').attrib['href']
@@ -84,4 +75,3 @@ class TrustpilotSpider(scrapy.Spider):
         if next_page:
             next_page_url = response.urljoin(next_page)
             yield Request(next_page_url, callback=self.parse_reviews, headers=self.headers)
-

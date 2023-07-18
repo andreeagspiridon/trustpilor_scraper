@@ -12,14 +12,11 @@ class TrustPilotTK:
         self.types = None
         self.result_box = None
         self.cursor = None
-        self.trustscore_get = None
         self.location_get = None
         self.services_get = None
         self.trust_score_str = None
         self.services_str = None
         self.location_str = None
-        self.list3 = None
-        self.entry3 = None
         self.trust_score = None
         self.services = None
         self.location = None
@@ -29,7 +26,6 @@ class TrustPilotTK:
         self.entry1_str = None
         self.entry1 = None
         self.list1 = None
-        self.list1_value = None
         self.master = master
         self.entry_dictionary = dict()
         self.render_main_page()
@@ -54,7 +50,7 @@ class TrustPilotTK:
             if search_str and re.search(search_str, element, re.IGNORECASE):
                 list_name.insert(END, element.title())
 
-    """The search_item method is used to fetch multiple values and display them, get the slected item, and move it 
+    """The search_item method is used to fetch multiple values and display them, get the selected item, and move it 
     to the entry box"""
 
     def search_item(self, widget_search, entry_name, list_name, dict_key=None):
@@ -143,8 +139,9 @@ class TrustPilotTK:
         self.result_box.grid(row=7, column=1, padx=10)
 
         # Buttons
-        submit_button = tk.Button(root, text="Submit", command=lambda: self.post_results(), bg="#B4B4EE").grid(row=5, column=1)
-        reset_button = tk.Button(root, text="Click Here to Reset", command=self.clear_text).grid(row=6, column=1)
+        tk.Button(root, text="Submit", command=lambda: self.post_results(), bg="#B4B4EE").grid(row=5, column=1)
+        tk.Button(root, text="Click Here to Reset", command=self.clear_text).grid(row=6, column=1)
+
 
 if __name__ == '__main__':
     root = tk.Tk()
